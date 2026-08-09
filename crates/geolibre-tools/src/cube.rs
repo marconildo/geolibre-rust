@@ -184,6 +184,17 @@ pub(crate) mod test_support {
 
     /// Builds an in-memory cube raster from per-slice, row-major buffers.
     pub(crate) fn cube_raster(cols: usize, rows: usize, slices: &[Vec<f64>]) -> String {
+        cube_raster_typed(cols, rows, slices, DataType::F32)
+    }
+
+    /// As [`cube_raster`], with an explicit data type — needed to test that a
+    /// tool preserves precision rather than narrowing to F32.
+    pub(crate) fn cube_raster_typed(
+        cols: usize,
+        rows: usize,
+        slices: &[Vec<f64>],
+        data_type: DataType,
+    ) -> String {
         let mut r = Raster::new(RasterConfig {
             cols,
             rows,
@@ -193,7 +204,7 @@ pub(crate) mod test_support {
             cell_size: 1.0,
             cell_size_y: None,
             nodata: -9999.0,
-            data_type: DataType::F32,
+            data_type,
             crs: CrsInfo {
                 epsg: Some(3857),
                 wkt: None,
@@ -204,8 +215,13 @@ pub(crate) mod test_support {
         for (b, slice) in slices.iter().enumerate() {
             for row in 0..rows {
                 for col in 0..cols {
-                    r.set(b as isize, row as isize, col as isize, slice[row * cols + col])
-                        .unwrap();
+                    r.set(
+                        b as isize,
+                        row as isize,
+                        col as isize,
+                        slice[row * cols + col],
+                    )
+                    .unwrap();
                 }
             }
         }
@@ -227,7 +243,14 @@ mod tests {
     #[test]
     fn loads_slices_in_band_order() {
         let path = cube_raster(2, 1, &[vec![1.0, 2.0], vec![3.0, 4.0], vec![5.0, 6.0]]);
-        let cube = load_cube(&args(json!({"input": path})), "input", Some("dv"), Some("dim"), 1).unwrap();
+        let cube = load_cube(
+            &args(json!({"input": path})),
+            "input",
+            Some("dv"),
+            Some("dim"),
+            1,
+        )
+        .unwrap();
         assert_eq!(cube.len(), 3);
         assert_eq!(cube.get(0, 0, 0), Some(1.0));
         assert_eq!(cube.get(1, 0, 0), Some(3.0));
@@ -258,7 +281,14 @@ mod tests {
     #[test]
     fn no_data_reads_as_none() {
         let path = cube_raster(2, 1, &[vec![1.0, -9999.0]]);
-        let cube = load_cube(&args(json!({"input": path})), "input", Some("dv"), Some("dim"), 1).unwrap();
+        let cube = load_cube(
+            &args(json!({"input": path})),
+            "input",
+            Some("dv"),
+            Some("dim"),
+            1,
+        )
+        .unwrap();
         assert_eq!(cube.get(0, 0, 0), Some(1.0));
         assert_eq!(cube.get(0, 0, 1), None);
         let mut s = Vec::new();
@@ -281,6 +311,13 @@ mod tests {
         // Not a number.
         assert!(load(json!({"input": path.clone(), "dv": "2000,x,2002"})).is_err());
         // Too few slices for the caller.
-        assert!(load_cube(&args(json!({"input": path})), "input", Some("dv"), Some("dim"), 9).is_err());
+        assert!(load_cube(
+            &args(json!({"input": path})),
+            "input",
+            Some("dv"),
+            Some("dim"),
+            9
+        )
+        .is_err());
     }
 }
