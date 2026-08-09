@@ -10,6 +10,7 @@
 mod add_surface_information;
 mod adjust_3d_z;
 mod adjust_stream_to_raster;
+mod aggregate_multidimensional_raster;
 mod aggregate_points;
 mod aggregate_polygons;
 mod apportion_polygon;
@@ -40,6 +41,7 @@ mod combine;
 mod common;
 mod compare_spatial_weights;
 mod construct_sight_lines;
+mod coregister_rasters;
 mod corridor;
 mod count_overlapping_features;
 mod create_cartographic_partitions;
@@ -47,6 +49,7 @@ mod create_overpass;
 mod create_underpass;
 mod create_routes;
 mod create_spatially_balanced_points;
+mod cube;
 mod cul_de_sac_masks;
 mod cut_fill;
 mod delineate_built_up_areas;
@@ -55,6 +58,8 @@ mod delineate_mounts;
 mod dem_filter;
 mod dendrogram;
 mod densify_sampling_network;
+mod detect_bright_ocean_objects;
+mod detect_dark_ocean_areas;
 mod detect_feature_changes;
 mod detect_image_anomalies;
 mod diffusion_interpolation_with_barriers;
@@ -73,6 +78,7 @@ mod excel_to_table;
 mod euclidean_direction;
 mod expand_shrink;
 mod exploratory_interpolation;
+mod evaluate_variable_influence;
 mod exploratory_regression;
 mod extract_locations_from_text;
 mod extract_sinks;
@@ -106,9 +112,11 @@ mod generate_points_along_3d_lines;
 mod generate_spatial_weights_matrix;
 mod generate_subset_polygons;
 mod generate_transects_along_lines;
+mod geojson_geom;
 mod geographically_weighted_regression;
 mod geoparquet_io;
 mod getis_ord_general_g;
+mod goldstein_phase_filter;
 mod gpx_to_features;
 mod graphic_buffer;
 mod h3_polyfill;
@@ -119,6 +127,7 @@ mod idw_3d;
 mod incremental_spatial_autocorrelation;
 mod inside_3d;
 mod integrate;
+mod intersect_3d_line_with_surface;
 mod interpolate_from_spatiotemporal_points;
 mod interpolate_shape;
 mod kernel_interpolation_with_barriers;
@@ -141,6 +150,7 @@ mod near_3d;
 mod neighborhood_summary_statistics;
 mod non_maximum_suppression;
 mod optics_clustering;
+mod observer_points;
 mod optimal_corridor_connections;
 mod optimal_interpolation;
 mod path_distance;
@@ -168,6 +178,7 @@ mod resolve_building_conflicts;
 mod ripleys_k;
 mod rubbersheet_features;
 mod sar_coherence;
+mod sar_common;
 mod semivariogram_sensitivity;
 mod similarity_search;
 mod simplify_3d_line;
@@ -213,12 +224,16 @@ mod intervisibility;
 mod is_closed_3d;
 mod mesh3d;
 mod multipatch_footprint;
+mod radiometric_terrain_flattening;
+mod raster_domain;
+mod raster_to_weighted_points;
 mod raster_stack;
 mod simplify_by_tangent_segments;
 mod sun_shadow_volume;
 mod surface_solid;
 mod union_3d;
 mod unwrap_phase;
+mod validate_flow_direction;
 mod vector_common;
 mod vector_convert;
 mod vector_to_h3;
@@ -274,6 +289,7 @@ mod cell_position_statistics;
 mod cell_statistics;
 mod collapse_road_detail;
 mod compute_accuracy_for_object_detection;
+mod contour_list;
 mod contour_with_barriers;
 mod convert_coordinate_notation;
 mod create_spatial_sampling_locations;
@@ -281,9 +297,12 @@ mod darcy_flow;
 mod detect_graphic_conflict;
 mod detect_incidents;
 mod dimension_reduction;
+mod dimensional_moving_statistics;
 mod disperse_markers;
 mod extract_scanned_features;
+mod extract_water_sar;
 mod feature_outline_masks;
+mod fft2;
 mod find_argument_statistics;
 mod generalized_linear_regression;
 mod geodetic_densify;
@@ -301,6 +320,8 @@ mod line_statistics;
 mod local_bivariate_relationships;
 mod merge_lines_by_pseudo_node;
 mod multidimensional_anomaly;
+mod multidimensional_principal_components;
+mod multidimensional_raster_correlation;
 mod multivariate_clustering;
 mod optimized_hot_spot_analysis;
 mod optimized_outlier_analysis;
@@ -311,6 +332,7 @@ mod porous_puff;
 mod predict_using_trend_raster;
 mod presence_only_prediction;
 mod propagate_displacement;
+mod remove_thermal_noise;
 mod repair_geometry;
 mod resolve_road_conflicts;
 mod space_time_kernel_density;
@@ -332,6 +354,7 @@ mod hot_spot_analysis_comparison;
 mod polygon_volume;
 mod rescale_by_function;
 mod split_raster;
+mod surface_difference;
 mod surface_parameters;
 
 use std::collections::BTreeMap;
@@ -358,6 +381,25 @@ pub fn geolibre_tools() -> Vec<Box<dyn Tool>> {
         Box::new(semivariogram_sensitivity::SemivariogramSensitivityTool),
         Box::new(spatially_constrained_multivariate_clustering::SpatiallyConstrainedMultivariateClusteringTool),
         Box::new(optimal_corridor_connections::OptimalCorridorConnectionsTool),
+        Box::new(goldstein_phase_filter::GoldsteinPhaseFilterTool),
+        Box::new(coregister_rasters::CoregisterRastersTool),
+        Box::new(radiometric_terrain_flattening::RadiometricTerrainFlatteningTool),
+        Box::new(remove_thermal_noise::RemoveThermalNoiseTool),
+        Box::new(detect_bright_ocean_objects::DetectBrightOceanObjectsTool),
+        Box::new(detect_dark_ocean_areas::DetectDarkOceanAreasTool),
+        Box::new(extract_water_sar::ExtractWaterSarTool),
+        Box::new(aggregate_multidimensional_raster::AggregateMultidimensionalRasterTool),
+        Box::new(dimensional_moving_statistics::DimensionalMovingStatisticsTool),
+        Box::new(multidimensional_raster_correlation::MultidimensionalRasterCorrelationTool),
+        Box::new(multidimensional_principal_components::MultidimensionalPrincipalComponentsTool),
+        Box::new(observer_points::ObserverPointsTool),
+        Box::new(surface_difference::SurfaceDifferenceTool),
+        Box::new(intersect_3d_line_with_surface::Intersect3dLineWithSurfaceTool),
+        Box::new(raster_domain::RasterDomainTool),
+        Box::new(contour_list::ContourListTool),
+        Box::new(raster_to_weighted_points::RasterToWeightedPointsTool),
+        Box::new(validate_flow_direction::ValidateFlowDirectionTool),
+        Box::new(evaluate_variable_influence::EvaluateVariableInfluenceTool),
         Box::new(adjust_stream_to_raster::AdjustStreamToRasterTool),
         Box::new(generate_breach_lines::GenerateBreachLinesTool),
         Box::new(idw_3d::Idw3dTool),
@@ -907,6 +949,341 @@ pub fn geolibre_param_schemas(tool_id: &str) -> Option<BTreeMap<String, ToolPara
             ("input", vector_in()),
             ("output", vector_out()),
             ("closed_only", ToolParamSchema::bool()),
+        ]),
+        "evaluate_variable_influence" => schemas(&[
+            ("input", vector_in()),
+            ("dependent_field", ToolParamSchema::string()),
+            ("explanatory_fields", ToolParamSchema::string()),
+            ("output", table_out()),
+            ("output_partial_dependence", table_out()),
+            (
+                "model_type",
+                ToolParamSchema::enum_values(&["regression", "classification"]),
+            ),
+            ("number_of_trees", int()),
+            ("max_depth", int()),
+            ("min_samples_leaf", int()),
+            ("grid_points", int()),
+            ("permutation_repeats", int()),
+        ]),
+        "raster_domain" => schemas(&[
+            ("input", raster_in()),
+            ("output", vector_out()),
+            ("geometry_type", ToolParamSchema::enum_values(&["polygon", "line"])),
+            ("ignore_value", float()),
+            ("min_value", float()),
+            ("max_value", float()),
+            ("min_area", float()),
+            ("fill_holes", ToolParamSchema::bool()),
+            ("all_bands", ToolParamSchema::bool()),
+            ("band", int()),
+        ]),
+        "contour_list" => schemas(&[
+            ("input", raster_in()),
+            ("contour_values", ToolParamSchema::string()),
+            ("output", vector_out()),
+            (
+                "geometry_type",
+                ToolParamSchema::enum_values(&["polyline", "polygon"]),
+            ),
+            ("min_length", float()),
+            ("close_rings", ToolParamSchema::bool()),
+            ("band", int()),
+        ]),
+        "raster_to_weighted_points" => schemas(&[
+            ("input", raster_in()),
+            ("output", vector_out()),
+            ("max_number_of_points", int()),
+            (
+                "method",
+                ToolParamSchema::enum_values(&[
+                    "fibonacci_lattice",
+                    "fibonacci_spiral",
+                    "circular",
+                    "centroid",
+                ]),
+            ),
+            ("min_value", float()),
+            ("max_points_per_cell", int()),
+            ("include_weight", ToolParamSchema::bool()),
+            ("band", int()),
+        ]),
+        "validate_flow_direction" => schemas(&[
+            ("input", raster_in()),
+            ("output", vector_out()),
+            ("flow_direction_type", ToolParamSchema::enum_values(&["d8", "mfd"])),
+            ("report_edge_outflow", ToolParamSchema::bool()),
+            ("check_circular", ToolParamSchema::bool()),
+            ("band", int()),
+        ]),
+        "intersect_3d_line_with_surface" => schemas(&[
+            ("input", vector_in()),
+            ("surface", raster_in()),
+            ("multipatch", vector_in()),
+            ("output", vector_out()),
+            ("output_points", vector_out()),
+            ("spacing", float()),
+            ("keep_above", ToolParamSchema::bool()),
+            ("keep_below", ToolParamSchema::bool()),
+            ("band", int()),
+        ]),
+        "surface_difference" => schemas(&[
+            ("input", raster_in()),
+            // Dual-typed: a reference raster path or a constant elevation, so
+            // it stays a string rather than claiming to be a raster input.
+            ("reference", ToolParamSchema::string()),
+            ("output", vector_out()),
+            ("output_raster", raster_out()),
+            ("tolerance", float()),
+            ("min_area", float()),
+            ("include_coincident", ToolParamSchema::bool()),
+            ("band", int()),
+            ("reference_band", int()),
+        ]),
+        "observer_points" => schemas(&[
+            ("input", raster_in()),
+            ("observers", vector_in()),
+            ("output", raster_out()),
+            ("output_agl", raster_out()),
+            ("output_table", table_out()),
+            (
+                "analysis_type",
+                ToolParamSchema::enum_values(&["observers", "frequency"]),
+            ),
+            ("observer_offset", float()),
+            ("observer_offset_field", ToolParamSchema::string()),
+            ("target_offset", float()),
+            ("max_distance", float()),
+            ("curvature", ToolParamSchema::bool()),
+            ("refractivity_coefficient", float()),
+            ("band", int()),
+        ]),
+        "multidimensional_raster_correlation" => schemas(&[
+            (
+                "input1",
+                ToolParamSchema::input_multiple(ToolDatasetSchema::Raster),
+            ),
+            (
+                "input2",
+                ToolParamSchema::input_multiple(ToolDatasetSchema::Raster),
+            ),
+            ("output", raster_out()),
+            ("output_lag", raster_out()),
+            ("output_count", raster_out()),
+            (
+                "method",
+                ToolParamSchema::enum_values(&["pearson", "spearman", "kendall"]),
+            ),
+            ("lag", int()),
+            ("cross_correlation", ToolParamSchema::bool()),
+            ("max_lag", int()),
+            ("use_absolute", ToolParamSchema::bool()),
+            ("min_valid", int()),
+        ]),
+        "multidimensional_principal_components" => schemas(&[
+            (
+                "input",
+                ToolParamSchema::input_multiple(ToolDatasetSchema::Raster),
+            ),
+            ("output", raster_out()),
+            ("output_loadings", table_out()),
+            ("output_eigenvalues", table_out()),
+            (
+                "mode",
+                ToolParamSchema::enum_values(&["dimension_reduction", "spatial_reduction"]),
+            ),
+            ("dimension", ToolParamSchema::string()),
+            ("dimension_values", ToolParamSchema::string()),
+            ("number_of_pc", int()),
+            ("correlation", ToolParamSchema::bool()),
+        ]),
+        "aggregate_multidimensional_raster" => schemas(&[
+            (
+                "input",
+                ToolParamSchema::input_multiple(ToolDatasetSchema::Raster),
+            ),
+            ("output", raster_out()),
+            ("dimension", ToolParamSchema::string()),
+            ("dimension_values", ToolParamSchema::string()),
+            (
+                "aggregation_definition",
+                ToolParamSchema::enum_values(&[
+                    "all",
+                    "interval_value",
+                    "interval_count",
+                    "interval_ranges",
+                ]),
+            ),
+            ("interval_value", float()),
+            ("interval_count", int()),
+            ("interval_ranges", ToolParamSchema::string()),
+            (
+                "aggregation_method",
+                ToolParamSchema::enum_values(&[
+                    "mean",
+                    "majority",
+                    "maximum",
+                    "median",
+                    "minimum",
+                    "minority",
+                    "percentile",
+                    "range",
+                    "std",
+                    "sum",
+                    "variety",
+                ]),
+            ),
+            ("percentile_value", float()),
+            ("ignore_nodata", ToolParamSchema::bool()),
+        ]),
+        "dimensional_moving_statistics" => schemas(&[
+            (
+                "input",
+                ToolParamSchema::input_multiple(ToolDatasetSchema::Raster),
+            ),
+            ("output", raster_out()),
+            ("dimension", ToolParamSchema::string()),
+            ("backward_window", int()),
+            ("forward_window", int()),
+            (
+                "statistic",
+                ToolParamSchema::enum_values(&[
+                    "mean",
+                    "circular_mean",
+                    "majority",
+                    "maximum",
+                    "median",
+                    "minimum",
+                    "minority",
+                    "percentile",
+                    "std",
+                    "sum",
+                ]),
+            ),
+            ("percentile_value", float()),
+            ("period", float()),
+            ("min_valid", int()),
+            (
+                "nodata_handling",
+                ToolParamSchema::enum_values(&["data", "nodata", "fill_nodata"]),
+            ),
+        ]),
+        "extract_water_sar" => schemas(&[
+            ("input", raster_in()),
+            ("output", vector_out()),
+            ("output_raster", raster_out()),
+            ("dem", raster_in()),
+            ("threshold_db", float()),
+            ("min_area", float()),
+            ("max_slope", float()),
+            ("max_height_above_min", float()),
+            ("mask_features", vector_in()),
+            ("mask_type", ToolParamSchema::enum_values(&["land_polygon", "water_polygon"])),
+            ("histogram_bins", int()),
+            ("input_units", ToolParamSchema::enum_values(&["intensity", "dn", "amplitude", "db"])),
+            ("band", int()),
+        ]),
+        "detect_dark_ocean_areas" => schemas(&[
+            ("input", raster_in()),
+            ("output", vector_out()),
+            ("output_raster", raster_out()),
+            (
+                "method",
+                ToolParamSchema::enum_values(&["statistical", "otsu", "fixed"]),
+            ),
+            ("threshold", float()),
+            ("min_area", float()),
+            ("min_contrast_db", float()),
+            ("mask_features", vector_in()),
+            ("mask_type", ToolParamSchema::enum_values(&["land_polygon", "water_polygon"])),
+            ("histogram_bins", int()),
+            ("input_units", ToolParamSchema::enum_values(&["intensity", "dn", "amplitude", "db"])),
+            ("band", int()),
+        ]),
+        "remove_thermal_noise" => schemas(&[
+            ("input", raster_in()),
+            ("output", raster_out()),
+            ("output_snr", raster_out()),
+            ("noise_raster", raster_in()),
+            ("noise_profile", ToolParamSchema::string()),
+            ("noise_constant", float()),
+            ("noise_units", ToolParamSchema::enum_values(&["intensity", "dn", "amplitude", "db"])),
+            ("input_units", ToolParamSchema::enum_values(&["intensity", "dn", "amplitude", "db"])),
+            ("output_units", ToolParamSchema::enum_values(&["linear", "db"])),
+            ("floor_fraction", float()),
+            ("band", int()),
+        ]),
+        "detect_bright_ocean_objects" => schemas(&[
+            ("input", raster_in()),
+            ("output", vector_out()),
+            (
+                "geometry_type",
+                ToolParamSchema::enum_values(&["bounding_box", "perimeter"]),
+            ),
+            ("threshold", float()),
+            ("guard_size", int()),
+            ("background_size", int()),
+            ("mask_features", vector_in()),
+            (
+                "mask_type",
+                ToolParamSchema::enum_values(&["land_polygon", "water_polygon"]),
+            ),
+            ("min_object_length", float()),
+            ("max_object_length", float()),
+            ("min_object_width", float()),
+            ("max_object_width", float()),
+            ("min_cells", int()),
+            ("input_units", ToolParamSchema::enum_values(&["intensity", "dn", "amplitude", "db"])),
+            ("band", int()),
+        ]),
+        "radiometric_terrain_flattening" => schemas(&[
+            ("input", raster_in()),
+            ("dem", raster_in()),
+            ("output", raster_out()),
+            ("output_scattering_area", raster_out()),
+            ("output_geometry_mask", raster_out()),
+            // Dual-typed: a constant in degrees or a raster path, so it stays
+            // a string rather than claiming to be a raster input.
+            ("incidence_angle", ToolParamSchema::string()),
+            ("look_azimuth", float()),
+            (
+                "input_calibration",
+                ToolParamSchema::enum_values(&["beta0", "sigma0_ellipsoid", "gamma0_ellipsoid"]),
+            ),
+            ("calibration_type", ToolParamSchema::enum_values(&["gamma0", "sigma0"])),
+            (
+                "input_units",
+                ToolParamSchema::enum_values(&["intensity", "dn", "amplitude", "db"]),
+            ),
+            ("output_units", ToolParamSchema::enum_values(&["linear", "db"])),
+            ("z_factor", float()),
+            ("band", int()),
+        ]),
+        "coregister_rasters" => schemas(&[
+            ("reference", raster_in()),
+            ("secondary", raster_in()),
+            ("output", raster_out()),
+            ("tie_points", vector_out()),
+            ("band", int()),
+            (
+                "transform",
+                ToolParamSchema::enum_values(&["translation", "affine", "polynomial2"]),
+            ),
+            ("tile_size", int()),
+            ("grid_size", int()),
+            ("max_shift", int()),
+            ("min_correlation", float()),
+            ("outlier_sigma", float()),
+            ("resample", ToolParamSchema::enum_values(&["bilinear", "nearest"])),
+        ]),
+        "goldstein_phase_filter" => schemas(&[
+            ("input", raster_in()),
+            ("output", raster_out()),
+            ("output_phase", raster_out()),
+            ("alpha", float()),
+            ("outer_window_size", int()),
+            ("inner_window_size", int()),
+            ("spectrum_smoothing", int()),
         ]),
         "cell_position_statistics" => schemas(&[
             (
